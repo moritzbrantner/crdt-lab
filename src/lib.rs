@@ -271,11 +271,7 @@ impl MovableListReplica {
     /// Returns [`ListError::ItemNotVisible`] when the item cannot currently be
     /// moved, [`ListError::IndexOutOfBounds`] for an invalid target index, or
     /// [`ListError::ClockExhausted`] if no new timestamp can be allocated.
-    pub fn move_to_index(
-        &mut self,
-        item: &ItemId,
-        index: usize,
-    ) -> Result<Operation, ListError> {
+    pub fn move_to_index(&mut self, item: &ItemId, index: usize) -> Result<Operation, ListError> {
         if !self.is_visible(item) {
             return Err(ListError::ItemNotVisible(item.clone()));
         }
@@ -455,7 +451,9 @@ impl MovableListReplica {
     }
 
     fn is_visible(&self, item: &ItemId) -> bool {
-        self.visible_items().iter().any(|visible| &visible.id == item)
+        self.visible_items()
+            .iter()
+            .any(|visible| &visible.id == item)
     }
 
     fn position_for_index(
@@ -574,8 +572,14 @@ mod tests {
 
         assert!(forward.equivalent_crdt_state(&reverse));
         assert!(forward.equivalent_crdt_state(&duplicated));
-        assert_eq!(forward.snapshot_json().unwrap(), reverse.snapshot_json().unwrap());
-        assert_eq!(forward.snapshot_json().unwrap(), duplicated.snapshot_json().unwrap());
+        assert_eq!(
+            forward.snapshot_json().unwrap(),
+            reverse.snapshot_json().unwrap()
+        );
+        assert_eq!(
+            forward.snapshot_json().unwrap(),
+            duplicated.snapshot_json().unwrap()
+        );
     }
 
     #[test]
@@ -590,7 +594,10 @@ mod tests {
 
         let alice_move = alice.move_to_index(&item("c"), 0).unwrap();
         let bob_move = bob.move_to_index(&item("c"), 2).unwrap();
-        assert_eq!(alice_move.timestamp().counter(), bob_move.timestamp().counter());
+        assert_eq!(
+            alice_move.timestamp().counter(),
+            bob_move.timestamp().counter()
+        );
         assert!(bob_move.timestamp() > alice_move.timestamp());
 
         let mut merged = replica("merged");
@@ -625,10 +632,12 @@ mod tests {
         merged.apply(&bob_delete);
         merged.apply(&alice_move);
 
-        assert!(!merged
-            .visible_items()
-            .iter()
-            .any(|visible| visible.id == item("b")));
+        assert!(
+            !merged
+                .visible_items()
+                .iter()
+                .any(|visible| visible.id == item("b"))
+        );
     }
 
     #[test]
