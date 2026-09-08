@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f4f1ea" />
+    <title>CRDT Lab — movable list</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="intro">
+        <p class="eyebrow">CRDT Lab · Rust/WASM experiment</p>
+        <h1>Reorder the same list on two disconnected replicas.</h1>
+        <p class="lede">
+          Moves happen locally first. Deliver them later to see whether both replicas converge and which concurrent move wins.
+        </p>
+      </header>
+
+      <section class="network" aria-labelledby="network-title">
+        <div>
+          <p class="eyebrow">Network</p>
+          <h2 id="network-title">Partition controls</h2>
+          <p id="convergence-status" class="status" aria-live="polite"></p>
+        </div>
+        <div class="network-actions">
+          <button id="conflict-button" type="button">Create concurrent move</button>
+          <button id="sync-button" type="button" class="primary">Deliver everything</button>
+          <button id="reset-button" type="button">Reset</button>
+        </div>
+      </section>
+
+      <section class="replicas" aria-label="Replica states">
+        <article class="replica" data-replica="left">
+          <div class="replica-heading">
+            <div>
+              <p class="eyebrow">Replica A</p>
+              <h2>Local order</h2>
+            </div>
+            <button type="button" class="deliver-button" data-deliver="left">Deliver next →</button>
+          </div>
+          <ol id="left-list" class="item-list"></ol>
+          <div class="outbox">
+            <h3>Waiting for B</h3>
+            <ul id="left-outbox"></ul>
+          </div>
+        </article>
+
+        <article class="replica" data-replica="right">
+          <div class="replica-heading">
+            <div>
+              <p class="eyebrow">Replica B</p>
+              <h2>Local order</h2>
+            </div>
+            <button type="button" class="deliver-button" data-deliver="right">← Deliver next</button>
+          </div>
+          <ol id="right-list" class="item-list"></ol>
+          <div class="outbox">
+            <h3>Waiting for A</h3>
+            <ul id="right-outbox"></ul>
+          </div>
+        </article>
+      </section>
+
+      <p id="error-message" class="error" role="alert" hidden></p>
+      <footer>
+        The ordering and convergence result come from the Rust movable-list baseline compiled to WebAssembly; JavaScript only drives and renders it.
+      </footer>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
