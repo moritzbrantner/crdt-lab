@@ -1,7 +1,11 @@
 name: Pages
 
 on:
-  push:
+  workflow_run:
+    workflows:
+      - Validate
+    types:
+      - completed
     branches: [main]
   workflow_dispatch:
 
@@ -14,34 +18,45 @@ concurrency:
 
 jobs:
   build:
-    name: Pages build
-    runs-on: ubuntu-latest
+    name: Reuse validated Pages artifact
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     permissions:
+      actions: read
       contents: read
-      pages: write
-    steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Build Rust/WASM lab
-        run: ./scripts/build-pages.sh
-      - name: Configure Pages
-        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
-        with:
-          path: dist
+    uses: moritzbrantner/reusable-workflows/.github/workflows/build-artifact.yml@544af51c921b09b4452b7346347ec9effa58f179
+    with:
+      source_sha: ${{ github.event.workflow_run.head_sha || github.sha }}
+      artifact_key: crdt-lab-pages-v1
+      rust_toolchain: stable
+      rust_targets: wasm32-unknown-unknown
+      build_command: ./scripts/build-pages.sh
+      artifact_paths: dist
+      reuse_across_runs: true
+      artifact_retention_days: 7
 
   deploy:
     name: Pages deploy
     needs: build
-    runs-on: ubuntu-latest
     permissions:
+      actions: read
+      contents: read
       pages: write
       id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Deploy lab
-        id: deployment
-        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
+    uses: moritzbrantner/reusable-workflows/.github/workflows/deploy-pages.yml@544af51c921b09b4452b7346347ec9effa58f179
+    with:
+      node_version: ""
+      bun_version: ""
+      install_command: ""
+      build_command: ""
+      artifact_path: dist
+      prebuilt_artifact_run_id: ${{ needs.build.outputs.producer_run_id }}
+      prebuilt_artifact_receipt_name: ${{ needs.build.outputs.receipt_artifact_name }}
+      prebuilt_artifact_name: ${{ needs.build.outputs.artifact_name }}
+      prebuilt_artifact_digest: ${{ needs.build.outputs.artifact_digest }}
+      prebuilt_source_sha: ${{ needs.build.outputs.source_sha }}
+      prebuilt_artifact_key: ${{ needs.build.outputs.artifact_key }}
+      prebuilt_identity_digest: ${{ needs.build.outputs.identity_digest }}
+      cache_bun: false
+      cache_node: false
+      concurrency_group: crdt-lab-pages
+      cancel_in_progress: false
