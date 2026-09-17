@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy,rustfmt
@@ -24,5 +26,20 @@ jobs:
         run: cargo fmt --all -- --check
       - name: Check browser JavaScript
         run: node --check site/app.js
-      - name: Build Pages artifact
-        run: ./scripts/build-pages.sh
+
+  build-pages:
+    name: Build or reuse validated Pages artifact
+    needs: validate
+    permissions:
+      actions: read
+      contents: read
+    uses: moritzbrantner/reusable-workflows/.github/workflows/build-artifact.yml@544af51c921b09b4452b7346347ec9effa58f179
+    with:
+      source_sha: ${{ github.event.pull_request.head.sha || github.sha }}
+      artifact_key: crdt-lab-pages-v1
+      rust_toolchain: stable
+      rust_targets: wasm32-unknown-unknown
+      build_command: ./scripts/build-pages.sh
+      artifact_paths: dist
+      reuse_across_runs: true
+      artifact_retention_days: 7
