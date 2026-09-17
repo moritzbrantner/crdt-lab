@@ -23,6 +23,7 @@ jobs:
     permissions:
       actions: read
       contents: read
+      packages: read
     uses: moritzbrantner/reusable-workflows/.github/workflows/build-artifact.yml@544af51c921b09b4452b7346347ec9effa58f179
     with:
       source_sha: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -42,6 +43,7 @@ jobs:
       contents: read
       pages: write
       id-token: write
+      packages: read
     uses: moritzbrantner/reusable-workflows/.github/workflows/deploy-pages.yml@544af51c921b09b4452b7346347ec9effa58f179
     with:
       node_version: ""
