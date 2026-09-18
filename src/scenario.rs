@@ -3,7 +3,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ApplyOutcome, ItemId, ListError, MovableListReplica, Operation, ReplicaId, Snapshot, Timestamp,
+    ApplyOutcome, ItemId, ListError, MovableListReplica, Operation, ReplicaId, Snapshot,
 };
 
 /// Serializable deterministic experiment.
