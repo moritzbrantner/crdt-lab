@@ -1,0 +1,17 @@
+{
+  "name": "concurrent insertion after the same neighbor",
+  "replicas": ["alice", "bob"],
+  "steps": [
+    {"type":"local","id":"insert-a","replica":"alice","action":{"type":"insert","index":0,"item":"a","value":"A"}},
+    {"type":"local","id":"insert-c","replica":"alice","action":{"type":"insert","index":1,"item":"c","value":"C"}},
+    {"type":"deliver","operation":"insert-a","to":"bob"},
+    {"type":"deliver","operation":"insert-c","to":"bob"},
+    {"type":"link","left":"alice","right":"bob","connected":false},
+    {"type":"local","id":"alice-insert-b","replica":"alice","action":{"type":"insert","index":1,"item":"b","value":"B"}},
+    {"type":"local","id":"bob-insert-x","replica":"bob","action":{"type":"insert","index":1,"item":"x","value":"X"}},
+    {"type":"link","left":"alice","right":"bob","connected":true},
+    {"type":"deliver","operation":"bob-insert-x","to":"alice"},
+    {"type":"deliver","operation":"alice-insert-b","to":"bob"},
+    {"type":"assert","assertion":{"type":"equivalent","replicas":["alice","bob"]}}
+  ]
+}
