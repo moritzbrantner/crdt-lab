@@ -8,11 +8,21 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use serde::{Deserialize, Serialize};
 
+mod rga;
 mod scenario;
+mod sequence_comparison;
 
+pub use rga::{
+    RgaError, RgaId, RgaInvariantViolation, RgaNodeMetadata, RgaOperation, RgaOperationKind,
+    RgaReplica, RgaSnapshot, RgaVisibleItem,
+};
 pub use scenario::{
     LocalAction, ReplicaSnapshot, Scenario, ScenarioFailure, ScenarioReport, ScenarioStep,
     ScenarioStepReport, SemanticAssertion, StepOutcome,
+};
+pub use sequence_comparison::{
+    RgaReplicaSnapshot, RgaScenarioReport, RgaScenarioStepReport, RgaStepOutcome,
+    SequenceComparisonReport,
 };
 
 /// Stable identifier for a replica.
