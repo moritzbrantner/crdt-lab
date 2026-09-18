@@ -178,6 +178,15 @@ Implemented foundation:
 
 Add RGA, LSEQ/Logoot, YATA, Fugue/FugueMax, and an ESBT experiment. Normalize them behind a common experiment interface without erasing algorithm-specific metadata.
 
+RGA foundation implemented:
+
+- The same serialized semantic scenario can now be replayed through both the movable-list baseline and an RGA sequence implementation.
+- RGA keeps permanent node ids, predecessor links, and tombstones in its own snapshot instead of being flattened into baseline positions.
+- Concurrent siblings use deterministic descending node-id ordering; the concurrent-insert fixture deliberately shows that this can produce a different visible order from the dense-position baseline while both replicas still converge.
+- RGA invariant diagnostics report missing predecessors, cycles, and duplicate stable item identities separately from convergence.
+- First-class move scenarios fail explicitly under RGA rather than being silently translated into delete-plus-insert.
+- The comparison is available to WASM consumers through `compare_sequence_scenario_json`.
+
 ### Slice 4 — Move semantics laboratory
 
 Compare delete-plus-insert, last-writer move, and dedicated move-aware sequence semantics. Add concurrent neighbor edits and range moves.
