@@ -378,9 +378,7 @@ impl RgaReplica {
     /// predecessor metadata, values, and tombstones are included.
     #[must_use]
     pub fn equivalent_crdt_state(&self, other: &Self) -> bool {
-        self.seen == other.seen
-            && self.nodes == other.nodes
-            && self.tombstones == other.tombstones
+        self.seen == other.seen && self.nodes == other.nodes && self.tombstones == other.tombstones
     }
 
     fn next_timestamp(&mut self) -> Result<Timestamp, RgaError> {
