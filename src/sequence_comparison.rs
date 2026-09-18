@@ -289,11 +289,7 @@ impl RgaRuntime {
             .ok_or_else(|| unknown_replica(replica))?;
 
         let operation = match action {
-            LocalAction::Insert {
-                index,
-                item,
-                value,
-            } => state
+            LocalAction::Insert { index, item, value } => state
                 .insert_at(*index, item.clone(), value.clone())
                 .map_err(rga_error)?,
             LocalAction::Delete { item } => state.delete(item).map_err(rga_error)?,
