@@ -457,6 +457,7 @@ fn rga_error(error: RgaError) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ItemId;
 
     const CONCURRENT_INSERT: &str = include_str!("../scenarios/concurrent-insert.json");
     const CONCURRENT_MOVE: &str = include_str!("../scenarios/concurrent-move.json");
