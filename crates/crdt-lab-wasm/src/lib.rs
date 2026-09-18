@@ -1,4 +1,4 @@
-use crdt_lab::{ItemId, ListError, MovableListReplica, Operation, ReplicaId, Snapshot};
+use crdt_lab::{ItemId, ListError, MovableListReplica, Operation, ReplicaId, Scenario, Snapshot};
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
 
@@ -10,6 +10,13 @@ struct LabView {
     left_outbox: Vec<Operation>,
     right_outbox: Vec<Operation>,
     converged: bool,
+}
+
+/// Replays a serialized Rust-owned scenario and returns deterministic diagnostics.
+#[wasm_bindgen]
+pub fn run_scenario_json(scenario_json: &str) -> Result<String, JsValue> {
+    let scenario = Scenario::from_json(scenario_json).map_err(json_error)?;
+    scenario.run().to_json().map_err(json_error)
 }
 
 #[wasm_bindgen]
@@ -138,4 +145,8 @@ impl TwoReplicaListLab {
 
 fn list_error(error: ListError) -> JsValue {
     JsValue::from_str(&format!("{error:?}"))
+}
+
+fn json_error(error: serde_json::Error) -> JsValue {
+    JsValue::from_str(&error.to_string())
 }

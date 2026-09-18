@@ -1,0 +1,17 @@
+{
+  "name": "reordered and duplicate delivery",
+  "replicas": ["alice", "bob"],
+  "steps": [
+    {"type":"local","id":"insert-a","replica":"alice","action":{"type":"insert","index":0,"item":"a","value":"A"}},
+    {"type":"local","id":"insert-b","replica":"alice","action":{"type":"insert","index":1,"item":"b","value":"B"}},
+    {"type":"local","id":"insert-c","replica":"alice","action":{"type":"insert","index":2,"item":"c","value":"C"}},
+    {"type":"link","left":"alice","right":"bob","connected":false},
+    {"type":"link","left":"alice","right":"bob","connected":true},
+    {"type":"deliver","operation":"insert-c","to":"bob"},
+    {"type":"deliver","operation":"insert-a","to":"bob"},
+    {"type":"deliver","operation":"insert-a","to":"bob"},
+    {"type":"deliver","operation":"insert-b","to":"bob"},
+    {"type":"assert","assertion":{"type":"equivalent","replicas":["alice","bob"]}},
+    {"type":"assert","assertion":{"type":"visible_order","replica":"bob","items":["a","b","c"]}}
+  ]
+}

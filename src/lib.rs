@@ -8,6 +8,13 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use serde::{Deserialize, Serialize};
 
+mod scenario;
+
+pub use scenario::{
+    LocalAction, ReplicaSnapshot, Scenario, ScenarioFailure, ScenarioReport, ScenarioStep,
+    ScenarioStepReport, SemanticAssertion, StepOutcome,
+};
+
 /// Stable identifier for a replica.
 #[derive(Clone, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 pub struct ReplicaId(String);
@@ -17,6 +24,12 @@ impl ReplicaId {
     #[must_use]
     pub fn new(value: impl Into<String>) -> Self {
         Self(value.into())
+    }
+
+    /// Returns the replica identifier as text.
+    #[must_use]
+    pub fn as_str(&self) -> &str {
+        &self.0
     }
 }
 
@@ -29,6 +42,12 @@ impl ItemId {
     #[must_use]
     pub fn new(value: impl Into<String>) -> Self {
         Self(value.into())
+    }
+
+    /// Returns the item identifier as text.
+    #[must_use]
+    pub fn as_str(&self) -> &str {
+        &self.0
     }
 }
 
@@ -144,7 +163,7 @@ pub enum OperationKind {
 }
 
 /// Result of applying a delivered operation.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub enum ApplyOutcome {
     /// The operation had not been observed before.
     Applied,

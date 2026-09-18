@@ -163,6 +163,17 @@ This is deliberately a baseline, not a claim that last-writer move semantics are
 
 Introduce a serializable experiment format, named replicas, partitions, delivery steps, semantic assertions, seeded generated histories, and replay diagnostics.
 
+Implemented foundation:
+
+- JSON scenarios name replicas and stable operation ids.
+- Link steps model partitions and reconnection explicitly.
+- Delivery steps reference exact operations, so reordered and duplicate delivery are first-class and reproducible.
+- Assertions currently cover full replicated-state equivalence and visible stable-item order.
+- Replay reports preserve every produced CRDT operation plus a visible snapshot after every step.
+- Seeded move-history generation creates deterministic partition/reconnect histories for property-style coverage.
+- The curated corpus in `scenarios/` covers concurrent move, move-versus-delete, and reordered duplicate delivery.
+- The same runner is exposed through WASM with `run_scenario_json`; JavaScript does not own replay semantics.
+
 ### Slice 3 — Sequence algorithm comparison
 
 Add RGA, LSEQ/Logoot, YATA, Fugue/FugueMax, and an ESBT experiment. Normalize them behind a common experiment interface without erasing algorithm-specific metadata.
