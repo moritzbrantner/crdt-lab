@@ -1,0 +1,21 @@
+{
+  "name": "concurrent move versus delete",
+  "replicas": ["alice", "bob"],
+  "steps": [
+    {"type":"local","id":"insert-a","replica":"alice","action":{"type":"insert","index":0,"item":"a","value":"A"}},
+    {"type":"local","id":"insert-b","replica":"alice","action":{"type":"insert","index":1,"item":"b","value":"B"}},
+    {"type":"local","id":"insert-c","replica":"alice","action":{"type":"insert","index":2,"item":"c","value":"C"}},
+    {"type":"deliver","operation":"insert-a","to":"bob"},
+    {"type":"deliver","operation":"insert-b","to":"bob"},
+    {"type":"deliver","operation":"insert-c","to":"bob"},
+    {"type":"link","left":"alice","right":"bob","connected":false},
+    {"type":"local","id":"alice-move-b","replica":"alice","action":{"type":"move","item":"b","target_index":0}},
+    {"type":"local","id":"bob-delete-b","replica":"bob","action":{"type":"delete","item":"b"}},
+    {"type":"link","left":"alice","right":"bob","connected":true},
+    {"type":"deliver","operation":"alice-move-b","to":"bob"},
+    {"type":"deliver","operation":"bob-delete-b","to":"alice"},
+    {"type":"assert","assertion":{"type":"equivalent","replicas":["alice","bob"]}},
+    {"type":"assert","assertion":{"type":"visible_order","replica":"alice","items":["a","c"]}},
+    {"type":"assert","assertion":{"type":"visible_order","replica":"bob","items":["a","c"]}}
+  ]
+}
