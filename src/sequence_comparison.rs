@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    ApplyOutcome, ItemId, LocalAction, ReplicaId, RgaError, RgaInvariantViolation, RgaOperation,
+    ApplyOutcome, LocalAction, ReplicaId, RgaError, RgaInvariantViolation, RgaOperation,
     RgaReplica, RgaSnapshot, Scenario, ScenarioFailure, ScenarioReport, ScenarioStep,
     SemanticAssertion,
 };
