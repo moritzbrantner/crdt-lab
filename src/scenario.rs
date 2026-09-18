@@ -2,9 +2,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    ApplyOutcome, ItemId, ListError, MovableListReplica, Operation, ReplicaId, Snapshot,
-};
+use crate::{ApplyOutcome, ItemId, ListError, MovableListReplica, Operation, ReplicaId, Snapshot};
 
 /// Serializable deterministic experiment.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -410,10 +408,7 @@ impl Runtime {
             if !seen.insert(replica.clone()) {
                 return Err(format!("duplicate replica '{}'", replica.as_str()));
             }
-            replicas.insert(
-                replica.clone(),
-                MovableListReplica::new(replica.clone()),
-            );
+            replicas.insert(replica.clone(), MovableListReplica::new(replica.clone()));
         }
 
         Ok(Self {
@@ -440,8 +435,7 @@ impl Runtime {
                 if left == right {
                     return Err("a network link requires two different replicas".to_owned());
                 }
-                self.links
-                    .insert(link_key(left, right), *connected);
+                self.links.insert(link_key(left, right), *connected);
                 Ok(StepOutcome::LinkChanged {
                     left: left.clone(),
                     right: right.clone(),
@@ -474,11 +468,7 @@ impl Runtime {
             .ok_or_else(|| unknown_replica(replica))?;
 
         let operation = match action {
-            LocalAction::Insert {
-                index,
-                item,
-                value,
-            } => state
+            LocalAction::Insert { index, item, value } => state
                 .insert_at(*index, item.clone(), value.clone())
                 .map_err(list_error)?,
             LocalAction::Move { item, target_index } => state
@@ -543,9 +533,7 @@ impl Runtime {
         match assertion {
             SemanticAssertion::Equivalent { replicas } => {
                 if replicas.len() < 2 {
-                    return Err(
-                        "equivalent assertion requires at least two replicas".to_owned(),
-                    );
+                    return Err("equivalent assertion requires at least two replicas".to_owned());
                 }
 
                 let first_id = &replicas[0];
