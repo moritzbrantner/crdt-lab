@@ -19,6 +19,16 @@ pub fn run_scenario_json(scenario_json: &str) -> Result<String, JsValue> {
     scenario.run().to_json().map_err(json_error)
 }
 
+/// Replays one semantic scenario against the baseline and RGA implementations.
+#[wasm_bindgen]
+pub fn compare_sequence_scenario_json(scenario_json: &str) -> Result<String, JsValue> {
+    let scenario = Scenario::from_json(scenario_json).map_err(json_error)?;
+    scenario
+        .compare_sequence_algorithms()
+        .to_json()
+        .map_err(json_error)
+}
+
 #[wasm_bindgen]
 pub struct TwoReplicaListLab {
     left: MovableListReplica,
