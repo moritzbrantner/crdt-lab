@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-WASM_BINDGEN_VERSION=0.2.100
+WASM_BINDGEN_VERSION="$(sed -n 's/^wasm-bindgen = "=\([0-9.]*\)"$/\1/p' crates/crdt-lab-wasm/Cargo.toml)"
+if [[ ! "$WASM_BINDGEN_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "crdt-lab-wasm must declare one exact wasm-bindgen version" >&2
+  exit 1
+fi
 
 rustup target add wasm32-unknown-unknown
 if ! command -v wasm-bindgen >/dev/null 2>&1 || [[ "$(wasm-bindgen --version)" != "wasm-bindgen ${WASM_BINDGEN_VERSION}" ]]; then
